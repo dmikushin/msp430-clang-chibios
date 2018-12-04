@@ -14,10 +14,10 @@
     limitations under the License.
 */
 
-#include "hal.h"
 #include "ch.h"
-#include "ch_test.h"
-#include "test_root.h"
+#include "hal.h"
+#include "nil_test_root.h"
+#include "oslib_test_root.h"
 
 /*
  * Thread 2.
@@ -34,7 +34,8 @@ THD_FUNCTION(Thread2, arg) {
 
   while (chnGetTimeout(&SD1, TIME_INFINITE)) {
     chnWrite(&SD1, (const uint8_t *)"Hello World!\r\n", 14);
-    test_execute((void*)&SD1);
+    test_execute((BaseSequentialStream *)&SD1, &nil_test_suite);
+    test_execute((BaseSequentialStream *)&SD1, &oslib_test_suite);
     chThdSleepMilliseconds(2000);
   }
 }

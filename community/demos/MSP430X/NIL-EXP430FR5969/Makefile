@@ -59,9 +59,10 @@ ifeq ($(USE_LTO),)
 endif
 
 # Enable the selected hardware multiplier
-ifeq ($(USE_HWMULT),)
-  USE_HWMULT = f5series
-endif
+# XXX What is the corresponding CLANG option ?
+#ifeq ($(USE_HWMULT),)
+#  USE_HWMULT = f5series
+#endif
 
 # Enable this if you want to see the full log while compiling.
 ifeq ($(USE_VERBOSE_COMPILE),)
@@ -113,7 +114,7 @@ include $(CHIBIOS)/os/hal/osal/nil/osal.mk
 include $(CHIBIOS)/os/nil/nil.mk
 include $(CHIBIOS_CONTRIB)/os/common/ports/MSP430X/compilers/GCC/mk/port.mk
 # Other files (optional).
-include $(CHIBIOS)/test/nil/test.mk
+include $(CHIBIOS)/test/nil/nil_test.mk
 
 # Define linker script file here
 LDSCRIPT = $(STARTUPLD)/msp430fr5969.ld
@@ -136,8 +137,9 @@ CPPSRC =
 ASMSRC = 
 ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(CHIBIOS)/os/license \
-				 $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
+INCDIR = $(CHIBIOS)/os/license $(CHIBIOS)/os/lib/include \
+         $(CHIBIOS)/test/lib $(CHIBIOS)/test/nil/source/test $(CHIBIOS)/test/oslib/source/test \
+         $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
          $(CHIBIOS)/os/various
 
@@ -152,12 +154,12 @@ INCDIR = $(CHIBIOS)/os/license \
 MCU = msp430fr5969
 
 TRGT = msp430-elf-
-CC   = $(TRGT)gcc
-CPPC = $(TRGT)g++
+CC   = clang
+CPPC = clang++
 # Enable loading with g++ only if you need C++ runtime support.
 # NOTE: You can use C++ even without C++ support if you are careful. C++
 #       runtime support makes code size explode.
-LD   = $(TRGT)gcc
+LD   = $(TRGT)ld
 #LD   = $(TRGT)g++
 CP   = $(TRGT)objcopy
 AS   = $(TRGT)gcc -x assembler-with-cpp
@@ -168,7 +170,8 @@ HEX  = $(CP) -O ihex
 BIN  = $(CP) -O binary
 
 # MSP430-specific options here
-MOPT = -m$(MODEL)
+# XXX What is the corresponding CLANG option to -m$(MODEL) ?
+# MOPT = -m$(MODEL)
 
 # Define C warning options here
 CWARN = -Wall -Wextra -Wundef -Wstrict-prototypes
@@ -203,5 +206,5 @@ ULIBS =
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS_CONTRIB)/os/common/startup/MSP430X/compilers/GCC
+RULESPATH = $(CHIBIOS_CONTRIB)/os/common/startup/MSP430X/compilers/CLANG
 include $(RULESPATH)/rules.mk
