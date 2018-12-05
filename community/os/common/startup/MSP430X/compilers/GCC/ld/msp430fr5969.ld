@@ -385,6 +385,9 @@ SECTIONS
   .debug_macro    0 : { *(.debug_macro) }
 
   /DISCARD/ : { *(.note.GNU-stack) }
+
+  __heap_base__           = __etext;
+  __heap_end__            = 0xFF7F; /* end of FRAM */
 }
 
 INCLUDE msp430fr5969_symbols.ld

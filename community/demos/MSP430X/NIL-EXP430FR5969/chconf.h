@@ -34,6 +34,7 @@
 
 #define CH_CFG_USE_OBJ_FIFOS TRUE
 #define CH_CFG_USE_PIPES TRUE
+#define CH_CFG_USE_FACTORY TRUE
 
 /*===========================================================================*/
 /**

@@ -72,6 +72,8 @@ int main(void) {
      task but you must never try to sleep or wait in this loop. Note that
      this tasks runs at the lowest priority level so any instruction added
      here will be executed after all other tasks have been started.*/
-  while (true) {
+  for (volatile int i = 0; ; i++) {
+          /* Note we do volatile infinite loop here, as according to the
+           * standard, any loop must have side effects. */
   }
 }
