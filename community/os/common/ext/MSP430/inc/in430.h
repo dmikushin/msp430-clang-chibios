@@ -65,7 +65,7 @@ typedef unsigned int __istate_t;
     );\
 })
 
-#define _enable_interrupts()                __asm__ __volatile__ ("nop { eint { nop")
+#define _enable_interrupts()                __asm__ __volatile__ ("nop;\neint;\nnop")
 
 #define _bis_SR_register(x) \
     __asm__ __volatile__ ("bis.w %0, SR { nop" \
@@ -80,7 +80,7 @@ typedef unsigned int __istate_t;
     );\
 })
 
-#define _enable_interrupts()                __asm__ __volatile__ ("eint { nop")
+#define _enable_interrupts()                __asm__ __volatile__ ("eint;\nnop")
 
 #define _bis_SR_register(x) \
     __asm__ __volatile__ ("bis.w %0, SR" \
@@ -89,7 +89,7 @@ typedef unsigned int __istate_t;
 
 #endif
 
-#define _disable_interrupts()               __asm__ __volatile__ ("dint { nop")
+#define _disable_interrupts()               __asm__ __volatile__ ("dint;\nnop")
 
 #define _bic_SR_register(x) \
     __asm__ __volatile__ ("bic.w %0, SR { nop" \

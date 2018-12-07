@@ -60,15 +60,26 @@ bool __msp430x_in_isr;
  * @param[in] ntp       the thread to be switched in
  * @param[in] otp       the thread to be switched out
  */
-#if !(__GNUC__ < 6 && __GNUC_MINOR__ < 4) || defined(__OPTIMIZE__)
+#if !(__GNUC__ < 6 && __GNUC_MINOR__ < 4) || defined(__OPTIMIZE__) || defined(__clang__)
 __attribute__((naked))
 #endif
-void _port_switch(thread_t *ntp, thread_t *otp) {
-#if (__GNUC__ < 6 && __GNUC_MINOR__ < 4) && !defined(__OPTIMIZE__)
+#if defined(__clang__)
+// Clang is more strict about non-asm statements in naked functions,
+// so we simply omit parameters, which is harmless.
+void _port_switch()
+#else
+void _port_switch(thread_t *ntp, thread_t *otp)
+#endif
+{
+#if (__GNUC__ < 6 && __GNUC_MINOR__ < 4) && !defined(__OPTIMIZE__) && !defined(__clang__)
   asm volatile ("add #4, r1");
 #endif
+#if !defined(__clang__)
+// Clang is more strict about non-asm statements in naked functions,
+// so we simply omit parameters, which is harmless.
   (void)(ntp);
   (void)(otp);
+#endif
 #if defined(__MSP430X_LARGE__)
   asm volatile ("pushm.a #7, R10");
   asm volatile ("mova r1, @R13");
@@ -76,10 +87,30 @@ void _port_switch(thread_t *ntp, thread_t *otp) {
   asm volatile ("popm.a #7, R10");
   asm volatile ("reta");
 #else
+#if defined(__clang__)
+  asm volatile ("push r10");
+  asm volatile ("push r9");
+  asm volatile ("push r8");
+  asm volatile ("push r7");
+  asm volatile ("push r6");
+  asm volatile ("push r5");
+  asm volatile ("push r4");
+#else
   asm volatile ("pushm.w #7, R10");
+#endif
   asm volatile ("mov r1, @R13");
   asm volatile ("mov @R12, r1");
+#if defined(__clang__)
+  asm volatile ("pop r4");
+  asm volatile ("pop r5");
+  asm volatile ("pop r6");
+  asm volatile ("pop r7");
+  asm volatile ("pop r8");
+  asm volatile ("pop r9");
+  asm volatile ("pop r10");
+#else
   asm volatile ("popm.w #7, R10");
+#endif
   asm volatile ("ret");
 #endif
 }
